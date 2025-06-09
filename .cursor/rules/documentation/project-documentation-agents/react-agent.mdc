@@ -1,0 +1,120 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+name: drocumentation-react-agent.mdc
+description: Genera y mejora iterativamente la documentación del frontend React siguiendo un checklist de 10 puntos clave, basándose ÚNICAMENTE en el código fuente existente.
+AL Ser Iterativo en las iteraciones (NO con crees nuevos archivos), solo edita el actual, importa mas que indages y profuncdices la implementacion, que chequees si la documentacion actual es correcta para entenderla a cavalidad antes que agregues gran cantidad dedocumentacion.
+
+flow:
+  - Si el archivo auto-docs/{nombre repo}.md existe:
+    - Leer su contenido
+    - Extraer un resumen entendible por IA
+    - Evaluar qué secciones faltan o están incompletas comparado con el checklist
+    - Generar solo las mejoras necesarias basadas ESTRICTAMENTE en el código existente
+    - Escribir el archivo actualizado, conservando el contenido útil existente
+  - Si no existe:
+    - Analizar el código fuente existente
+    - Generar una nueva documentación siguiendo el checklist completo
+    - Crear el archivo auto-docs/{nombre repo}.md
+
+parameters:
+  - name: frontend_path
+    type: string
+    description: Ruta del archivo de documentación del frontend
+    default: auto-docs/{nombre repo}.md
+
+steps:
+  - read_dir(path="frontend/src") => src_files
+  - read_dir(path="frontend/src/components") => components
+  - read_dir(path="frontend/src/services") => services
+  - read_file(path="frontend/package.json") => package_json
+
+  - if: file_exists(frontend_path)
+    then:
+      - read_file(path=frontend_path) => existing_doc
+
+      - extract_summary(text=existing_doc) => current_summary
+
+      - generate(
+          """
+          Estás mejorando documentación existente para un frontend en React.
+          
+          IMPORTANTE: Debes documentar ÚNICAMENTE el código que realmente existe, NO inventes componentes, rutas, contextos o funcionalidades que no encuentres en el código fuente.
+          
+          Archivos principales: {src_files}
+          Componentes existentes: {components}
+          Servicios existentes: {services}
+          Package.json: {package_json}
+
+          Este es el contenido actual resumido:
+
+          {current_summary}
+
+          Tu tarea es conservar todo lo útil, pero detectar y completar secciones que estén ausentes o poco desarrolladas. Usa esta estructura:
+
+          1. Visión general
+          2. Navegación y estructura de la aplicación:
+             - IMPORTANTE: NO ASUMAS que existe un sistema de rutas centralizado (como React Router)
+             - Verifica si es una aplicación monolítica o un microfrontend
+             - En caso de microfrontend, documenta cómo se maneja la navegación interna (pestañas, estados, componentes condicionales)
+             - Documenta sólo los mecanismos de navegación que existan en el código (exportación de componentes, uso de tabs, menús, etc.)
+          3. Componentes clave (SOLO los componentes que realmente existen)
+          4. Estado global y comunicación (SOLO los patrones que realmente se usan)
+          5. Estilos
+          6. API e Integraciones (SOLO las implementadas)
+          7. Tests (SOLO si existen)
+          8. Consideraciones especiales (recomendaciones basadas en el código actual)
+          9. Hooks personalizados (SOLO los que realmente existen)
+          10. Convenciones y normas (basadas en lo observado en el código)
+
+          Mejora con ejemplos reales extraídos del código existente, explica decisiones de diseño cuando las veas implementadas, y respeta el estilo del archivo original.
+          Devuelve el documento completo y listo para sobrescribir.
+          
+          RECUERDA: NO inventes ninguna funcionalidad, componente, ruta o patrón que no esté en el código.
+          """
+        ) => improved_doc
+
+      - write_file(path=frontend_path, content=improved_doc)
+
+    else:
+      - generate(
+          """
+          Genera un archivo de documentación inicial para un proyecto React basándote ESTRICTAMENTE en el código existente.
+          
+          IMPORTANTE: Documenta ÚNICAMENTE el código que realmente existe, NO inventes componentes, rutas, contextos o funcionalidades.
+          
+          Archivos principales: {src_files}
+          Componentes existentes: {components}
+          Servicios existentes: {services}
+          Package.json: {package_json}
+
+          El documento debe cubrir los siguientes puntos con títulos claros:
+
+          1. Visión general: propósito, tecnologías usadas (basado en package.json y estructura)
+          2. Navegación y estructura de la aplicación:
+             - IMPORTANTE: NO ASUMAS que existe un sistema de rutas centralizado (como React Router)
+             - Determina si es una aplicación monolítica o un microfrontend
+             - Si es un microfrontend, documenta cómo se maneja la navegación interna (pestañas, estados, componentes condicionales)
+             - Examina index.tsx y archivos principales para entender cómo se exportan y organizan los componentes
+             - Documenta sólo los mecanismos de navegación que encuentres en el código
+          3. Componentes clave: SOLO listado y descripción de los componentes existentes
+          4. Estado global y comunicación: SOLO los patrones realmente implementados
+          5. Estilos: framework CSS y convenciones encontradas en el código
+          6. API e Integraciones: SOLO llamadas HTTP y endpoints implementados
+          7. Tests: SOLO si existen, sus herramientas y alcance
+          8. Consideraciones especiales: aspectos destacables del código actual
+          9. Hooks personalizados: SOLO los existentes
+          10. Convenciones y normas: linters, formato de carpetas y nombrado observado
+
+          Usa ejemplos reales extraídos del código, no suposiciones.
+          Devuelve el contenido listo para guardar como markdown.
+          
+          NO Documentes: como levantar el proyecto, configuraciones, ciclo de desarrollo
+
+          RECUERDA: NO inventes ninguna funcionalidad que no exista en el código.
+          """
+        ) => initial_doc
+
+      - write_file(path=frontend_path, content=initial_doc)

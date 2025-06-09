@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Dependiendo del archivo llama a la regla correspondiente de manera manual para generar o actualizar la documentacion, los agentes para documentar estan en la carpeta .cursor/rules/documentation/file-documentation-agents/
+Elije el que corresponde para llamarlo y en base a esta regla generar la documentacion y escribela en el archivo
+

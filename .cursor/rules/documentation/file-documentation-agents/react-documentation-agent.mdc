@@ -1,0 +1,52 @@
+---
+description: autogenera la documentacion cuando hay cambios significativos en un archivo en el framework react
+globs: 
+alwaysApply: false
+---
+# Documentation Agent: Estrategia de Documentación para Archivos en React
+
+config:
+  - min_changes_for_update: 5      # Cambios mínimos para actualizar la documentación
+  - update_markdown: true          # Actualizar archivos markdown asociados
+
+watch:
+  - pattern: "**/*.{js,jsx,ts,tsx}"
+  - exclude: ["**/tests/**/*", "**/__tests__/**/*", "**/*.spec.*", "**/*.test.*"]
+
+## Propósito
+Esta regla define cómo generar documentación concisa y útil para componentes React. El objetivo es proporcionar información clara con el mínimo de texto, facilitando la comprensión rápida del propósito y uso del componente.
+
+> **Ejemplo de uso:**
+> `regla adjunta + ayúdame a generar documentación para el archivo components/UserProfile.jsx`
+
+## Reglas Generales de Documentación
+
+### ¿Qué debe incluir la documentación de cada archivo?
+La documentación debe ser mínima pero efectiva, incluyendo:
+
+1. **Descripción breve:** Una o dos líneas describiendo qué hace el componente.
+2. **Props:** Lista condensada de props principales, sin etiquetas formales o exceso de detalles.
+
+### Características de la nueva documentación:
+- Evitar etiquetas formales como `@component`, `@description` cuando sea posible.
+- Combinar props relacionadas en una misma línea para ahorrar espacio.
+- Omitir información obvia o que se puede deducir fácilmente del código.
+- Eliminar secciones redundantes si la información ya está clara en el código.
+
+### ¿Qué debe evitarse?
+- Documentación excesivamente larga o verbosa.
+- Repetir información que ya está clara en el código.
+- Secciones innecesarias que no aportan valor para entender el componente.
+- Descripciones detalladas de cada línea o funcionalidad evidente.
+
+### Ejemplo de Documentación Concisa
+
+```jsx
+/**
+ * Componente que muestra el perfil de usuario y permite su edición.
+ * 
+ * @props
+ * - user: datos del usuario a mostrar
+ * - onEdit: función que se ejecuta al guardar cambios
+ */
+```

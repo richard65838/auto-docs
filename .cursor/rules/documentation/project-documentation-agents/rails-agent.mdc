@@ -1,0 +1,130 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+name: documentation-rails-agent
+description: Genera la documentación automática y mejora iterativamente la documentación de proyectos Rails siguiendo un checklist de 11 puntos clave, basándose ÚNICAMENTE en el código fuente existente.  
+Al ser iterativo, en las iteraciones (NO crees nuevos archivos), solo edita el actual. Importa más que indagues y profundices la implementación, que chequees si la documentación actual es correcta para entenderla a cabalidad antes que agregues gran cantidad de documentación.
+
+flow:
+  - Si el archivo auto-docs/{nombre repo}.md existe:
+    - Leer su contenido
+    - Extraer un resumen entendible por IA
+    - Evaluar qué secciones faltan o están incompletas comparado con el checklist
+    - Evaluar la documentación actual en busca de mejoras o errores
+    - Generar solo las mejoras necesarias basadas ESTRICTAMENTE en el código existente
+    - Escribir el archivo actualizado, conservando el contenido útil existente
+  - Si no existe:
+    - Analizar el código fuente existente
+    - Generar una nueva documentación siguiendo el checklist completo
+    - Crear el archivo auto-docs/{nombre repo}.md
+
+parameters:
+  - name: backend_path
+    type: string
+    description: Ruta del archivo de documentación del backend
+    default: auto-docs/{nombre repo}.md
+
+steps:
+  - read_dir(path="backend/app/models") => models
+  - read_dir(path="backend/app/controllers") => controllers
+  - read_dir(path="backend/app/services") => services
+  - read_dir(path="backend/app/jobs") => jobs
+  - read_file(path="backend/config/routes.rb") => routes_file
+  - read_dir(path="backend/spec") => specs
+  - read_file(path="backend/config/application.rb") => application_config
+  - read_file(path="backend/Gemfile") => gemfile
+  - read_file(path="backend/db/schema.rb") => schema
+  - if: file_exists("scripts/get_documentation.sh")
+    then:
+      - run_shell(path="scripts/get_documentation.sh backend/app/models") => model_overview
+    else:
+      - set_var("model_overview", value="")
+
+  - if: file_exists(backend_path)
+    then:
+      - read_file(path=backend_path) => existing_doc
+
+      - extract_summary(text=existing_doc) => current_summary
+
+      - generate(
+          """
+          Estás mejorando documentación existente para un backend en Rails.
+
+          IMPORTANTE: Documenta ÚNICAMENTE lo que esté presente en el código, NO inventes modelos, controladores, servicios, jobs ni flujos que no estén implementados.
+
+          - Modelos: {models}
+          - Controladores: {controllers}
+          - Servicios: {services}
+          - Jobs: {jobs}
+          - Rutas: {routes_file}
+          - Tests: {specs}
+          - Gemfile: {gemfile}
+          - Esquema de BD: {schema}
+          - Vista general de modelos (extraída por script): {model_overview}
+
+          Este es el contenido actual resumido:
+
+          {current_summary}
+
+          Tu tarea es mejorar este documento, completando las secciones ausentes o pobres. Sigue esta estructura:
+
+          1. Visión general
+          2. Estructura del proyecto
+          3. Modelos
+          4. Controladores y rutas
+          5. Servicios y lógica de negocio
+          6. Background jobs
+          7. Tests
+          8. Seguridad y autenticación
+          9. Integraciones externas
+          10. Migraciones y estructura de datos
+          11. Convenciones y estilo
+
+          Usa ejemplos REALES del código, explica decisiones si puedes inferirlas, y respeta el formato original del archivo.
+
+          NO Documentes: cómo levantar el proyecto, configuraciones, ciclo de desarrollo.
+
+          RECUERDA: NO documentes nada que no esté presente en el código fuente actual.
+          """
+        ) => improved_doc
+
+      - write_file(path=backend_path, content=improved_doc)
+
+    else:
+      - generate(
+          """
+          Genera un archivo de documentación inicial para un backend Rails basándote ESTRICTAMENTE en el código existente.
+
+          IMPORTANTE: NO inventes ningún modelo, ruta, servicio, integración o funcionalidad que no esté presente en el código.
+
+          - Modelos: {models}
+          - Controladores: {controllers}
+          - Servicios: {services}
+          - Jobs: {jobs}
+          - Rutas: {routes_file}
+          - Tests: {specs}
+          - Gemfile: {gemfile}
+          - Esquema de BD: {schema}
+          - Vista general de modelos (extraída por script): {model_overview}
+
+          El documento debe seguir esta estructura con títulos claros:
+
+          1. Visión general
+          2. Estructura del proyecto
+          3. Modelos
+          4. Controladores y rutas
+          5. Servicios y lógica de negocio
+          6. Background jobs
+          7. Tests
+          8. Seguridad y autenticación
+          9. Integraciones externas
+          10. Migraciones y estructura de datos
+          11. Convenciones y estilo
+
+          Usa ejemplos y fragmentos REALES. Devuelve el contenido listo para guardar como markdown.
+          """
+        ) => initial_doc
+
+      - write_file(path=backend_path, content=initial_doc)

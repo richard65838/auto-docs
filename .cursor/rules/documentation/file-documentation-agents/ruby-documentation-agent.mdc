@@ -1,0 +1,62 @@
+---
+description: autogenera la documentacion cuando hay cambios significativos en un archivo.
+globs: 
+alwaysApply: false
+---
+# Documentation Agent: Estrategia de Documentación para Archivos de Código
+
+
+config:
+  - min_changes_for_update: 5  # Cantidad mínima de cambios para considerar actualización
+  - update_markdown: true      # Actualizar archivos markdown asociados
+
+watch:
+  - pattern: "**/*.rb"
+  - exclude: ["**/spec/**/*", "**/test/**/*"]
+
+  ## Propósito
+El propósito de este documento es proporcionar las reglas y directrices para generar y escribir la documentación YARD de un archivo en el proyecto, facilitando la comprensión del contexto del código tanto para los desarrolladores como para las herramientas de IA como **Cursor**.
+
+Ejemplo de uso:
+regla adjunta + ayúdame a generar documentación para el archivo models/user.rb
+
+La documentación se generará y actualizará automáticamente cada vez que se realicen cambios significativos en un archivo. Esto tiene como objetivo mejorar la comprensión contextual de las herramientas de IA y evitar "alucinaciones" al tener una base de contexto siempre actualizada y precisa.
+
+## Reglas Generales de Documentación
+
+### ¿Qué debe incluir la documentación de cada archivo?
+Cada archivo debe tener una sección de documentación al inicio que esté estructurada de la siguiente manera:
+
+1. **Propósito del archivo:** Descripción breve del propósito y la función principal del archivo dentro del proyecto.
+2. **Funcionalidad clave:** Resumen de lo que hace el archivo a nivel funcional. ¿Qué problema resuelve?
+3. **Dependencias clave:** Listado de módulos, librerías y recursos externos importantes que el archivo utiliza.
+4. **Relaciones con otros componentes:** Explicación sobre cómo se integra el archivo con otras partes del proyecto o cómo interactúa con otros componentes.
+5. **Contexto adicional:** Cualquier nota relevante que ayude a comprender mejor el archivo, como su lugar dentro de la arquitectura general, patrones de diseño implementados, o configuraciones especiales.
+
+### ¿Qué debe evitarse en la documentación?
+Al redactar la documentación de un archivo, **no** se debe incluir:
+- Comentarios triviales, irrelevantes o decorativos (ej. "Este archivo fue difícil de escribir, pero al final funciona").
+- Información redundante o que ya está claramente indicada en el código (ej. repetir el nombre de las funciones o clases).
+- Comentarios que describan detalles internos de implementación que no sean relevantes para entender el **propósito** del archivo (como detalles de algoritmos o estructuras de datos).
+- Información desactualizada o irrelevante para el estado actual del archivo.
+- Detalles sobre el historial del archivo (como autor, fecha de creación, etc.), que ya son manejados por el sistema de control de versiones (Git).
+
+### Ejemplo de Documentación de Archivo
+
+```ruby
+  # @description Servicio responsable de configurar los pasos (steps) de un flujo de trabajo.
+  #
+  # Este servicio permite crear, actualizar y establecer las relaciones entre los pasos
+  # de un flujo de trabajo (workflow configuration). Maneja la lógica para establecer
+  # precedencias, notificaciones y referencias entre pasos.
+  #
+  # @example
+  #   policy = SomePolicy.new(current_user, workflow_configuration)
+  #   steps_params = { workflow_step_params: [...] }
+  #   result = WorkflowConfigurations::SetSteps.new(workflow_configuration, steps_params, policy).call
+  #
+  # @see WorkflowSteps::CreateOrUpdate
+  # @see WorkflowStepPrecedence
+
+```
+

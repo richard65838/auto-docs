@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+name: feedback-docs
+# Tipos de feedback:
+Busca a travez del feedback actualizar las documentaciones generadas por la IA para que estas sean mas relevantes y representen la realidad del proyecto.
+
+## Alucinacion
+Correcion que se interpreto incorrectamente una parte de la auto documentacion
+primero utiliza lee el feedback generado y en base a esto explica por que se genero la alucinacion, luego explica como podria mejorar la documentacion (SOLO EDITAR archivos en auto-docs) para mitigar la alucinacion.
+
+# Correcction
+Es cuando el usuario quiere cambiar algunaparte de la documentacion ya que no le parece relevante, en este caso actualizas la documentacion para reflejar los cambios propuestos. 
