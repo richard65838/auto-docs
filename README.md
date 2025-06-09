@@ -1,78 +1,104 @@
 # autoDocs
 
-## Resumen y contexto del proyecto
+## Resumen del proyecto
 
-El último mes he estado probando muchos temas con las reglas de Cursor y me han resultado muy interesantes. Les comparto algunos de los problemas que he tenido y algunas de las reglas que mejor me han funcionado. Estas reglas están lejos de ser perfectas, así que si les gustan y encuentran oportunidades de mejora, feliz que las conversemos o derechamente les hagan un PR.
+Este repositorio proporciona un conjunto de reglas y agentes para el sistema `.cursor`, diseñados para **facilitar la generación y mantenimiento de documentación estructurada en tu proyecto**. El objetivo principal no es crear documentación exhaustiva de manera automática, sino servir como un **índice estratégico** que ayude a Cursor a comprender mejor la estructura y los componentes del código, optimizando así el contexto disponible para la inteligencia artificial durante el desarrollo.
 
-### 1) Auto-docs
-Las auto documentaciones son muy útiles pero también peligrosas: una alucinación en auto-docs termina siendo muy dolorosa porque cada vez que se utiliza, ese error se propaga y puede restar más que sumar. Probé MemoryBanks usados por la comunidad, pero la cantidad de alucinaciones que generaban terminó siendo un problema, ya que a veces se concentraban más en los siguientes pasos y mareaban sobre qué estaba implementado y qué no. 
+- Documentacion Iterativa Incremental
+- Documentacion basada en framework
+- Orientacion en indice, y facilitar a la IA entender el proyecto
 
-Por otra parte, creo que la idea de un auto-docs es que sirva de índice para entender dónde y cómo buscar, o las decisiones de negocio, más que simplemente documentar la aplicación.
+## Auto docs
+En el chat de cursor escribe:
+´´´
+## Generar documentación del proyecto de cero
+Utiliza `@generate-project-auto-docs.mdc` para generar o actualizar la documentación global del proyecto.
 
-Por eso, hice una regla que analiza los proyectos que existen y, en base a eso, utiliza reglas por framework para hacer una documentación de proyecto. Esta regla tiene el foco de ser:
-- Iterativa: puede irse profundizando con cada iteración.
-- Doble checkeo para prevenir alucinaciones.
-- Basada en framework para entender las decisiones importantes.
+## Mejorar la documentación del backend
+Utiliza `@generate-project-auto-docs.mdc` para mejorar la documentacion del backend.
 
-### 2) Generación de documentación en archivos
-La documentación en los mismos archivos de programación va a adquirir mucha relevancia porque estos dan más contexto cuando Cursor comprende los archivos. Por eso, generé una regla que, independiente del archivo, genera una documentación estándar corta para el archivo (por ejemplo, para Ruby o TypeScript).
+## Generar la documentacion de un archivo
+Utiliza `@generate-file-docs.mdc` para documentar 'ruta del archivo'
 
-### 3) Scripts
-Este es mi punto favorito: implementar scripts `.sh` que pueda ejecutar Cursor para recopilar contexto. Con estos scripts es como pasarle una nueva herramienta a Cursor. Yo genero la documentación con mi documentador y estos scripts, que siempre tienen un formato `@description`. Luego, con un script puedo obtener todas las `@description` y, al leer esto, Cursor entiende muy bien el modelo de datos, no solo su estructura sino cómo funciona en conjunto.
+## Generar la documentacion de una carpeta
+Utiliza `@generate-file-docs.mdc` para documentar iterativamente cada archivo en 'ruta de la carpeta'
+---
 
-Actualmente solo tengo un script, que es para obtener descripciones de archivos, pero creo que aquí puede existir un gran potencial.
+## Organización de la documentación
+
+El proyecto distingue entre dos tipos de documentación, cada una con un propósito específico:
+
+- **Documentación generada automáticamente (`auto-docs/`):**  
+  Esta carpeta contiene la documentación que se genera mediante los scripts y agentes definidos en el proyecto. Su objetivo es servir como un índice estructurado que ayude a Cursor y a la IA a comprender la arquitectura general, los componentes y las relaciones del código. Esta documentación se actualiza bajo demanda, ejecutando los scripts correspondientes.
+
+- **Documentación manual (`documentation/`):**  
+  Aquí los desarrolladores pueden agregar documentación escrita a mano sobre partes complejas, críticas o core de la aplicación. Esta documentación es clave para proporcionar contexto adicional que la generación automática no puede captar, como decisiones de diseño, explicaciones de lógica compleja o detalles de negocio. Cursor y la IA utilizan también esta información para mejorar su comprensión del proyecto.
+
+**¿Por qué esta separación?**  
+La separación permite mantener la documentación generada y la manual organizadas y accesibles. Así, los desarrolladores pueden complementar la documentación automática con explicaciones detalladas donde sea necesario, asegurando que tanto las herramientas automáticas como los miembros del equipo tengan acceso al contexto más relevante y actualizado.
 
 ---
 
-## ¿Qué es este repositorio?
+## Formas de generar o actualizar la documentación
 
-Este repositorio contiene una colección de reglas y agentes para el sistema `.cursor` que permiten **generar y mantener actualizada la documentación de tu código de forma automática**. Está pensado para que, al integrarlo en cualquier proyecto, la documentación de archivos y del proyecto completo se mantenga siempre alineada con el estado real del código, sin esfuerzo manual.
+El sistema permite dos enfoques principales para la generación y actualización de la documentación, ambos ejecutados de manera manual según las necesidades del equipo:
 
----
+### 1. Generación o actualización de auto-docs a nivel de proyecto
 
-## ¿Para qué sirve y por qué es útil?
+- **¿Cómo se realiza?**  
+  Se ejecuta manualmente la regla `.cursor/rules/documentation/generate-project-auto-docs.mdc` para generar o actualizar la documentación global del proyecto en la carpeta `auto-docs/`.
+- **¿Para qué sirve?**  
+  Permite crear o actualizar la documentación estructurada del proyecto completo, o de una parte específica (por ejemplo, solo backend o solo frontend).
+- **¿Cuándo usarlo?**  
+  - Al iniciar un nuevo proyecto.
+  - Cuando se han realizado cambios significativos en la arquitectura.
+  - Para profundizar o mejorar la documentación en áreas que lo requieran.
 
-- **Ahorra tiempo:** Olvídate de escribir documentación repetitiva o de actualizar manualmente descripciones cada vez que cambias el código.
-- **Evita documentación desactualizada:** La documentación se actualiza automáticamente cuando hay cambios significativos en los archivos.
-- **Mejora el onboarding:** Los nuevos integrantes del equipo pueden entender rápidamente el propósito y funcionamiento de cada archivo y del proyecto en general.
-- **Facilita la colaboración:** Todos los miembros del equipo tienen acceso a documentación clara, concisa y siempre actualizada.
-- **Extensible:** Puedes agregar soporte para cualquier framework o lenguaje creando nuevas reglas personalizadas.
+### 2. Generación de documentación por archivos
 
----
-
-## ¿Cómo se instala?
-
-1. **Copia la carpeta `.cursor`** (y su contenido) en la raíz de tu proyecto.
-2. **Asegúrate de tener Cursor instalado** en tu editor o entorno de desarrollo.
-3. **Configura o ajusta las reglas** según los frameworks o lenguajes que uses (ver más abajo cómo hacerlo).
-
----
-
-## ¿Cómo se utiliza?
-
-- **Automático:** Una vez que las reglas están en tu proyecto, la documentación se genera y actualiza automáticamente cada vez que guardas o modificas archivos relevantes.
-- **Personalizable:** Puedes modificar las reglas para adaptarlas a tus necesidades o estilo de documentación.
-- **Documentación de archivos:** Por ejemplo, al modificar un componente React, se genera una breve descripción y un listado de props principales.
-- **Documentación de proyecto:** Se puede generar un archivo resumen del proyecto (por ejemplo, `auto-docs/mi-proyecto.md`) con la estructura, componentes clave, integraciones, etc.
-- **Scripts:** Puedes crear scripts para extraer información útil de la documentación generada y potenciar el contexto que Cursor puede utilizar.
+- **¿Cómo se realiza?**  
+  Se ejecuta manualmente la regla `.cursor/rules/documentation/generate-file-docs.mdc` para documentar un archivo específico, o de forma iterativa para varios archivos dentro de una carpeta.
+- **¿Para qué sirve?**  
+  Permite documentar archivos individuales, ideal para mantener actualizada la información de componentes, módulos o scripts particulares.
+- **¿Cuándo usarlo?**  
+  - Al crear o modificar archivos relevantes.
+  - Para reforzar la documentación en archivos críticos o de alta complejidad.
 
 ---
 
-## Ejemplo de utilidad
+## Propósito y beneficios
 
-- **Proyectos React:** Al modificar un archivo `.jsx` o `.tsx`, se actualiza automáticamente la documentación del componente, incluyendo descripción y props.
-- **Proyectos Ruby:** Al modificar un archivo `.rb`, se genera documentación YARD con propósito, dependencias y ejemplos de uso.
-- **Cualquier otro framework:** Puedes crear tus propias reglas para que la documentación se adapte a tu stack.
-- **Scripts personalizados:** Por ejemplo, puedes crear un script que extraiga todas las `@description` de tus archivos y así mejorar el contexto que Cursor utiliza.
+- **Mejora del contexto para IA:** La documentación generada y la manual actúan como un índice que permite a Cursor localizar y entender más eficientemente los elementos clave del proyecto.
+- **Documentación bajo demanda:** La generación de documentación automática no es completamente automática; es necesario ejecutar los scripts o agentes correspondientes para actualizarla.
+- **Evita documentación innecesaria:** El objetivo no es documentar por documentar, sino aportar información relevante que facilite la navegación y comprensión del código.
+- **Facilita el onboarding y la colaboración:** Proporciona una visión clara de la estructura y los componentes principales del proyecto, útil para nuevos integrantes y para el trabajo en equipo.
+- **Extensible:** Permite agregar soporte para cualquier framework o lenguaje mediante reglas personalizadas.
 
 ---
 
-## ¿Cómo agregar soporte para más frameworks?
+## Instalación
 
-1. **Crea un nuevo archivo de agente** en `.cursor/rules/documentation/file-documentation-agents/` o `project-documentation-agents/`.
-2. **Define los patrones de archivos a observar** y las reglas de documentación que deseas aplicar.
-3. **Ejemplo:**  
-   Para un framework ficticio, podrías crear `.cursor/rules/documentation/file-documentation-agents/mi-framework-agent.mdc` con reglas específicas para tus archivos.
+1. Copie la carpeta `.cursor` (y su contenido) en la raíz de su proyecto.
+2. Configure o ajuste las reglas según los frameworks o lenguajes utilizados (ver sección correspondiente).
+
+---
+
+## Uso
+
+- **Generación manual de documentación automática:** Es necesario ejecutar los scripts o agentes definidos para que se genere o actualice la documentación en `auto-docs/`. No se actualiza automáticamente con cada cambio en el código.
+- **Documentación manual:** Agregue documentación relevante en la carpeta `documentation/` para cubrir partes complejas, críticas o core del sistema (opcional).
+- **Documentación como índice:** Ambas carpetas sirven como referencia para Cursor y mejoran su capacidad de búsqueda y comprensión.
+- **Personalizable:** Las reglas pueden adaptarse a las necesidades o estilo de documentación del equipo.
+- **Documentación de archivos:** Por ejemplo, al ejecutar el script sobre un componente React, se genera una breve descripción y un listado de las principales props en `auto-docs/`, mientras que detalles complejos pueden documentarse manualmente en `documentation/`.
+
+---
+
+## Extensión a nuevos frameworks
+
+1. Cree un nuevo archivo de agente en `.cursor/rules/documentation/file-documentation-agents/` o `project-documentation-agents/`.
+2. Defina los patrones de archivos a observar y las reglas de documentación a aplicar.
+3. Ejemplo:  
+   Para un framework personalizado, cree `.cursor/rules/documentation/file-documentation-agents/mi-framework-agent.mdc` con las reglas correspondientes.
 
 ---
 
@@ -83,26 +109,28 @@ Este repositorio contiene una colección de reglas y agentes para el sistema `.c
   rules/
     documentation/
       file-documentation-agents/
-        # Aquí puedes agregar tus propios agentes
+        # Agentes personalizados para archivos
       project-documentation-agents/
         react-agent.mdc
         rails-agent.mdc
-        # Aquí puedes agregar tus propios agentes
+        # Agentes personalizados para generacion de auto-docs por proyecto
   scripts/
     get_documentation.sh
+documentation/
+  # Documentación manual agregada por los desarrolladores para partes complejas o core
 auto-docs/
-  # Aquí se generan los archivos de documentación global
+  # Documentación generada automáticamente mediante scripts y agentes
 ```
 
 ---
 
-## ¿Quién puede beneficiarse de este repositorio?
+## Público objetivo
 
-- Equipos que quieren mantener la documentación siempre actualizada sin esfuerzo manual.
-- Proyectos con alta rotación de código o de integrantes.
-- Cualquier desarrollador que quiera mejorar la calidad y claridad de la documentación de su código.
+- Equipos que buscan mejorar el contexto de la IA durante el desarrollo, sin generar documentación innecesaria.
+- Proyectos con alta rotación de código o integrantes.
+- Desarrolladores interesados en optimizar la calidad y claridad del contexto disponible para herramientas inteligentes.
 
 ---
 
-¿Tienes dudas o quieres ver un ejemplo concreto para tu stack?  
-¡Abre un issue o revisa los ejemplos incluidos en la carpeta `.cursor/rules/documentation/`!
+¿Dudas o necesitas un ejemplo para tu stack?  
+Abre un issue o revisa los ejemplos en `.cursor/rules/documentation/`.

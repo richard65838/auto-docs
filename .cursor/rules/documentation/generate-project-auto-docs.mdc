@@ -4,7 +4,8 @@ globs:
 alwaysApply: false
 ---
 name: auto-docs
-description: Detecta los subproyectos en el workspace, genera documentación específica para cada uno mediante reglas por framework (creándolas si no existen adaptadas al stack), y construye una visión general del proyecto en docs/project_summary.md.
+description: Detecta los subproyectos en el workspace, genera documentación específica para cada uno mediante reglas por framework (creándolas si no existen adaptadas al stack), y construye una visión general del proyecto en auto-docs/project_summary.md.
+antes de comenzar lee la documentacion manual en la carpeta raiz "documentation/"
 command: @auto-docs
 
 # Este es el FLUJO OBLIGATORIO que siempre debe seguir

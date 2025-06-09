@@ -3,7 +3,7 @@
 # =============================================================
 # Script: get_descriptions.sh
 # Descripción:
-#   Extrae las descripciones de modelos a partir de archivos Ruby.
+#   Extrae las descripciones de modelos a partir de archivos .
 #   Busca comentarios con la etiqueta @description al inicio de cada archivo.
 #
 # Uso:
